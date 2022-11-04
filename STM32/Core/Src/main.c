@@ -22,7 +22,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "timer.h"
+#include "button.h"
+#include "displayLed.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -90,6 +92,8 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
+  setTimer1(100);
+  int i = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -97,7 +101,21 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+      if(timer1_flag == 1){
+    	  if(i>9) i = 0;
+    	  display7SEG(i);
+    	  i++;
+    	  setTimer1(100);
+      }
+      if(is_button_pressed(0) == 1){
+    	  HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
+      }
+      if(is_button_pressed_1s(1) == 1){
+    	  HAL_GPIO_WritePin(LED_CHECK_GPIO_Port, LED_CHECK_Pin, SET);
+      }
+      if(is_button_pressed_1s(1) == 0){
+          	  HAL_GPIO_WritePin(LED_CHECK_GPIO_Port, LED_CHECK_Pin, RESET);
+            }
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -208,6 +226,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : BUTTON_0_Pin BUTTON_1_Pin BUTTON_2_Pin */
+  GPIO_InitStruct.Pin = BUTTON_0_Pin|BUTTON_1_Pin|BUTTON_2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : s0_Pin s1_Pin s2_Pin s3_Pin
